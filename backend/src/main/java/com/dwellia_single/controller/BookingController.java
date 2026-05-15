@@ -4,6 +4,8 @@ import com.dwellia_single.model.Booking;
 import com.dwellia_single.service.BookingService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/bookings")
 @CrossOrigin(origins = "http://localhost:5173")
@@ -16,15 +18,13 @@ public class BookingController {
     }
 
     @PostMapping("/{unitId}")
-    public Booking createBooking(
-            @PathVariable Long unitId,
-            @RequestBody Booking booking
-    ) {
+    public Booking createBooking(@PathVariable Long unitId,
+                                 @RequestBody Booking booking) {
         return bookingService.createBooking(unitId, booking);
     }
 
     @GetMapping
     public List<Booking> getAllBookings() {
-        return bookingRepository.findAll();
+        return bookingService.getAllBookings();
     }
 }

@@ -7,6 +7,8 @@ import com.dwellia_single.repository.BookingRepository;
 import com.dwellia_single.repository.UnitRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class BookingService {
 
@@ -33,5 +35,9 @@ public class BookingService {
         unitRepository.save(unit);
 
         return bookingRepository.save(booking);
+    }
+
+    public List<Booking> getAllBookings() {
+        return bookingRepository.findAll();
     }
 }
