@@ -1,35 +1,27 @@
 import { useParams, Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { getUnitById } from "../features/units/services/unitsApi";
+import { useUnit } from "@/features/units/hooks/useUnit";
 
 export default function UnitDetailsPage() {
   const { id } = useParams();
+  const { data, isLoading, isError } = useUnit(id);
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["unit", id],
-    queryFn: () => getUnitById(id),
-  });
-
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) return <p>Loading unit...</p>;
+  if (isError) return <p>Error loading unit</p>;
 
   return (
-    <div className="p-6">
-      <img
-        src={data.images?.[0] || "https://via.placeholder.com/400"}
-        className="w-full h-64 object-cover rounded"
-      />
+    <div style={{ padding: 20 }}>
+      <Link to="/">← Back</Link>
 
-      <h1 className="text-2xl font-bold mt-4">${data.price}</h1>
-      <p>{data.bedrooms} bedrooms</p>
+      <h1>{data.title}</h1>
+      <p>{data.description}</p>
 
-      <div className="mt-4 flex gap-4">
-        <Link
-          to={`/book/${data.id}`}
-          className="bg-green-600 text-white px-4 py-2 rounded"
-        >
-          Book Tour
-        </Link>
-      </div>
+      <h3>${data.price}</h3>
+
+      <p>
+        {data.bedrooms} bed / {data.bathrooms} bath
+      </p>
+
+      <p>Status: {data.status}</p>
     </div>
   );
 }
