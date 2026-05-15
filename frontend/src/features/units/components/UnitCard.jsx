@@ -2,23 +2,22 @@ import { Link } from "react-router-dom";
 
 export default function UnitCard({ unit }) {
   return (
-    <div className="bg-white rounded-xl shadow p-4">
-      <img
-        src={unit.images?.[0] || "https://via.placeholder.com/300"}
-        className="w-full h-40 object-cover rounded"
-      />
-
-      <div className="mt-3">
-        <h2 className="text-lg font-semibold">${unit.price}</h2>
-        <p>{unit.bedrooms} bed</p>
-
-        <Link
-          to={`/unit/${unit.id}`}
-          className="mt-3 inline-block bg-blue-600 text-white px-4 py-2 rounded"
-        >
-          View
-        </Link>
+    <Link to={`/units/${unit.id}`} className="card">
+      <div className="card-header">
+        <h3>{unit.title}</h3>
+        <span className={`badge ${unit.status.toLowerCase()}`}>
+          {unit.status}
+        </span>
       </div>
-    </div>
+
+      <p className="description">{unit.description}</p>
+
+      <div className="card-footer">
+        <div className="price">${unit.price} / month</div>
+        <div className="meta">
+          {unit.bedrooms} bed · {unit.bathrooms} bath
+        </div>
+      </div>
+    </Link>
   );
 }
