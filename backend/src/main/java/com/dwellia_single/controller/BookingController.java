@@ -22,4 +22,9 @@ public class BookingController {
     ) {
         return bookingService.createBooking(unitId, booking);
     }
+
+    @GetMapping
+    public List<Booking> getAllBookings() {
+        return bookingRepository.findAll();
+    }
 }
