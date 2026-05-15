@@ -1,34 +1,19 @@
 import { useUnits } from "@/features/units/hooks/useUnits";
-import { Link } from "react-router-dom";
+import UnitCard from "@/features/units/components/UnitCard";
 
 export default function HomePage() {
   const { data = [], isLoading, isError } = useUnits();
 
-  if (isLoading) return <p>Loading...</p>;
-  if (isError) return <p>Error loading units</p>;
+  if (isLoading) return <p className="state">Loading units...</p>;
+  if (isError) return <p className="state">Failed to load units</p>;
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Available Units</h1>
+    <div className="page">
+      <h1 className="title">Available Units</h1>
 
-      <div style={{ display: "grid", gap: 12 }}>
+      <div className="grid">
         {data.map((unit) => (
-          <Link
-            key={unit.id}
-            to={`/units/${unit.id}`}
-            style={{
-              textDecoration: "none",
-              color: "inherit",
-              border: "1px solid #ccc",
-              padding: 12,
-              display: "block",
-            }}
-          >
-            <h3>{unit.title}</h3>
-            <p>${unit.price}</p>
-            <p>{unit.bedrooms} bed / {unit.bathrooms} bath</p>
-            <strong>{unit.status}</strong>
-          </Link>
+          <UnitCard key={unit.id} unit={unit} />
         ))}
       </div>
     </div>
