@@ -1,11 +1,12 @@
 package com.dwellia_single.controller;
 
-import com.dwellia_single.auth.LoginRequest;
-import com.dwellia_single.auth.RegisterRequest;
 import com.dwellia_single.model.User;
+import com.dwellia_single.model.dto.AuthRequest;
 import com.dwellia_single.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -16,12 +17,14 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public User register(@RequestBody RegisterRequest request) {
+    public User register(@RequestBody AuthRequest request) {
         return authService.register(request.getEmail(), request.getPassword());
     }
 
     @PostMapping("/login")
-    public User login(@RequestBody LoginRequest request) {
-        return authService.login(request.getEmail(), request.getPassword());
+    public Map<String, String> login(@RequestBody AuthRequest request) {
+        String token = authService.login(request.getEmail(), request.getPassword());
+
+        return Map.of("token", token);
     }
 }

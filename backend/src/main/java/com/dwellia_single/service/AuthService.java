@@ -4,7 +4,7 @@ import com.dwellia_single.model.Role;
 import com.dwellia_single.model.User;
 import com.dwellia_single.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,20 +12,21 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     public User register(String email, String password) {
-
         User user = User.builder()
                 .email(email)
                 .password(passwordEncoder.encode(password))
                 .role(Role.ROLE_USER)
+                .enabled(true)
                 .build();
 
         return userRepository.save(user);
     }
 
-    public User login(String email, String password) {
+    public String login(String email, String password) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -33,6 +34,6 @@ public class AuthService {
             throw new RuntimeException("Invalid credentials");
         }
 
-        return user;
+        return jwtService.generateToken(user.getEmail());
     }
 }
