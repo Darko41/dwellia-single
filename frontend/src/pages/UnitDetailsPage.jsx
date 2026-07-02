@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
-import { useUnit } from "@/features/units/hooks/useUnit";
-import BookingForm from "@/features/bookings/components/BookingForm";
+import { useUnit } from "../features/units/hooks/useUnit";
+import BookingForm from "../features/bookings/components/BookingForm";
 
 export default function UnitDetailsPage() {
   const { id } = useParams();
@@ -12,10 +12,7 @@ export default function UnitDetailsPage() {
     <div style={{ padding: 20 }}>
       <h1>{data.title}</h1>
       <p>{data.description}</p>
-
       <h3>${data.price}</h3>
-
-      <p>Status: {data.status}</p>
 
       {data.status === "AVAILABLE" && (
         <BookingForm unitId={id} />

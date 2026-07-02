@@ -1,27 +1,12 @@
-import { Link, Outlet } from "react-router-dom";
+import AdminSidebar from "./AdminSidebar";
+import { Outlet } from "react-router-dom";
 
 export default function AdminLayout() {
   return (
-    <div style={{ display: "flex" }}>
-      {/* SIDEBAR */}
-      <aside style={{
-        width: 220,
-        padding: 20,
-        background: "#111",
-        color: "white",
-        minHeight: "100vh"
-      }}>
-        <h2>Admin</h2>
+    <div style={{ display: "flex", minHeight: "100vh" }}>
+      <AdminSidebar />
 
-        <nav style={{ display: "grid", gap: 10 }}>
-          <Link to="/admin" style={{ color: "white" }}>Dashboard</Link>
-          <Link to="/admin/units" style={{ color: "white" }}>Units</Link>
-          <Link to="/admin/bookings" style={{ color: "white" }}>Bookings</Link>
-        </nav>
-      </aside>
-
-      {/* CONTENT */}
-      <main style={{ padding: 20, flex: 1 }}>
+      <main style={{ flex: 1, padding: 20, background: "#fafafa" }}>
         <Outlet />
       </main>
     </div>

@@ -1,21 +1,30 @@
-import { useUnits } from "@/features/units/hooks/useUnits";
-import UnitCard from "@/features/units/components/UnitCard";
+import { useEffect, useState } from "react";
+import { getUnits } from "../features/units/services/unitsApi";
 
 export default function HomePage() {
-  const { data = [], isLoading, isError } = useUnits();
+  const [units, setUnits] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  if (isLoading) return <p className="state">Loading units...</p>;
-  if (isError) return <p className="state">Failed to load units</p>;
+  useEffect(() => {
+    getUnits()
+      .then((data) => {
+        setUnits(Array.isArray(data) ? data : []);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="page">
-      <h1 className="title">Available Units</h1>
+    <div>
+      <h1>Units</h1>
 
-      <div className="grid">
-        {data.map((unit) => (
-          <UnitCard key={unit.id} unit={unit} />
-        ))}
-      </div>
+      {units.map((u) => (
+        <div key={u.id}>
+          <h3>{u.title}</h3>
+          <p>{u.price}</p>
+        </div>
+      ))}
     </div>
   );
 }

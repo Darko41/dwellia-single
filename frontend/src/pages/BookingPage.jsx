@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { apiClient } from "../lib/apiClient";
+import { axiosInstance } from "@/utils/api/api";
 
 export default function BookingPage() {
   const { unitId } = useParams();
@@ -15,7 +15,7 @@ export default function BookingPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await apiClient.post("/bookings", {
+    await axiosInstance.post("/bookings", {
       ...form,
       unitId,
     });

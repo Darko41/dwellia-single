@@ -2,14 +2,19 @@ import axios from "axios";
 
 const API = "http://localhost:8080/api/auth";
 
-export const login = async (data) => {
+/**
+ * LOGIN
+ * returns JWT only (no side effects here anymore)
+ */
+export const loginRequest = async (data) => {
   const res = await axios.post(`${API}/login`, data);
-
-  localStorage.setItem("token", res.data.token);
-
-  return res.data;
+  return res.data; // { token: "..." }
 };
 
-export const register = async (data) => {
-  return axios.post(`${API}/register`, data);
+/**
+ * REGISTER
+ */
+export const registerRequest = async (data) => {
+  const res = await axios.post(`${API}/register`, data);
+  return res.data;
 };
