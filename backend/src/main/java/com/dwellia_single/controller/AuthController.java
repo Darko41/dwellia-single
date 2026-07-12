@@ -27,4 +27,14 @@ public class AuthController {
 
         return Map.of("token", token);
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<User> me(Authentication authentication) {
+
+        User user = userRepository
+                .findByEmail(authentication.getName())
+                .orElseThrow();
+
+        return ResponseEntity.ok(user);
+    }
 }
