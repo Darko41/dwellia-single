@@ -1,4 +1,4 @@
-import { axiosInstance } from "../../../utils/api/api";
+import { axiosInstance } from "@/shared/api/client";
 
 export const createBooking = async (unitId, data) => {
   const res = await axiosInstance.post(`/bookings/${unitId}`, data);

@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { axiosInstance } from "@/utils/api/api";
+import { useCreateBooking } from "@/features/bookings/hooks/useCreateBooking";
 
 export default function BookingPage() {
   const { unitId } = useParams();
+
+  const { mutate: createBooking, isPending } = useCreateBooking();
 
   const [form, setForm] = useState({
     name: "",
@@ -12,15 +14,23 @@ export default function BookingPage() {
     scheduledAt: "",
   });
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
-    await axiosInstance.post("/bookings", {
-      ...form,
-      unitId,
-    });
-
-    alert("Booking successful!");
+    createBooking(
+      {
+        ...form,
+        unitId,
+      },
+      {
+        onSuccess: () => {
+          alert("Booking successful!");
+        },
+        onError: () => {
+          alert("Booking failed!");
+        },
+      }
+    );
   };
 
   return (
@@ -31,31 +41,38 @@ export default function BookingPage() {
         <input
           placeholder="Name"
           className="border p-2"
+          value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
         />
 
         <input
           placeholder="Email"
           className="border p-2"
+          value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
 
         <input
           placeholder="Phone"
           className="border p-2"
+          value={form.phone}
           onChange={(e) => setForm({ ...form, phone: e.target.value })}
         />
 
         <input
           type="datetime-local"
           className="border p-2"
+          value={form.scheduledAt}
           onChange={(e) =>
             setForm({ ...form, scheduledAt: e.target.value })
           }
         />
 
-        <button className="bg-blue-600 text-white p-2 rounded">
-          Submit
+        <button
+          className="bg-blue-600 text-white p-2 rounded"
+          disabled={isPending}
+        >
+          {isPending ? "Submitting..." : "Submit"}
         </button>
       </form>
     </div>

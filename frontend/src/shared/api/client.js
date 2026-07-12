@@ -8,9 +8,8 @@ export const axiosInstance = axios.create({
   },
 });
 
-// JWT interceptor
 axiosInstance.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token"); // IMPORTANT: unified key
+  const token = localStorage.getItem("token");
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -19,7 +18,6 @@ axiosInstance.interceptors.request.use((config) => {
   return config;
 });
 
-// Global error handler
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {

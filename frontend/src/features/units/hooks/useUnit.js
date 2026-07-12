@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { getUnitById } from "../services/unitsApi";
+import { getUnitById } from "../api/unitsApi";
 
-export const useUnit = (id) => {
+export function useUnit(id) {
   return useQuery({
     queryKey: ["unit", id],
     queryFn: () => getUnitById(id),
     enabled: !!id,
   });
-};
+}

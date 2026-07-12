@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { getUnits } from "../services/unitsApi";
+import { getUnits } from "../api/unitsApi";
 
-export const useUnits = () => {
+export function useUnits() {
   return useQuery({
     queryKey: ["units"],
     queryFn: getUnits,
   });
-};
+}

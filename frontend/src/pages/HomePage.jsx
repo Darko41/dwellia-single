@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getUnits } from "../features/units/services/unitsApi";
+import { getUnits } from "../features/units/api/unitsApi";
 
 export default function HomePage() {
   const [units, setUnits] = useState([]);
