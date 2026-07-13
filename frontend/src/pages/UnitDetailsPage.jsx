@@ -1,19 +1,44 @@
 import { useParams } from "react-router-dom";
-import { useUnit } from "@/features/units/hooks/useUnit";
+
+import useUnit from "@/features/units/hooks/useUnit";
+import UnitDetails from "@/features/units/components/UnitDetails";
+
 
 export default function UnitDetailsPage() {
+
   const { id } = useParams();
-  const { data: unit, isLoading } = useUnit(id);
 
-  if (isLoading) return <p>Loading...</p>;
 
-  if (!unit) return <p>Unit not found</p>;
+  const {
+    data: unit,
+    isLoading,
+    error,
+  } = useUnit(id);
+
+
+  if (isLoading) {
+    return (
+      <div className="p-8">
+        Loading unit...
+      </div>
+    );
+  }
+
+
+  if (error || !unit) {
+    return (
+      <div className="p-8 text-red-600">
+        Unit not found.
+      </div>
+    );
+  }
+
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold">{unit.title}</h1>
-      <p>{unit.description}</p>
-      <p className="mt-2 font-semibold">${unit.price}</p>
-    </div>
+    <main className="mx-auto max-w-4xl p-8">
+
+      <UnitDetails unit={unit} />
+
+    </main>
   );
 }

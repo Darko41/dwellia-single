@@ -1,4 +1,4 @@
-import { useUnits } from "@/features/units/hooks/useUnits";
+import useUnits from "@/features/units/hooks/useUnits";
 
 export default function AdminUnits() {
   const { data: units, isLoading, error } = useUnits();

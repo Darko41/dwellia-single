@@ -1,8 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
-import { createBooking } from "../api/bookingApi";
+import { createBooking } from "@/features/bookings/api/bookingApi";
 
-export function useCreateBooking() {
+export default function useCreateBooking() {
   return useMutation({
-    mutationFn: createBooking,
+    mutationFn: ({ unitId, data }) =>
+      createBooking(unitId, data),
   });
 }

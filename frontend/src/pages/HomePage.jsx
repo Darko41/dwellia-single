@@ -1,30 +1,36 @@
-import { useEffect, useState } from "react";
-import { getUnits } from "../features/units/api/unitsApi";
+import useUnits from "@/features/units/hooks/useUnits";
+import UnitGrid from "@/features/units/components/UnitGrid";
 
 export default function HomePage() {
-  const [units, setUnits] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    data: units = [],
+    isLoading,
+    error,
+  } = useUnits();
 
-  useEffect(() => {
-    getUnits()
-      .then((data) => {
-        setUnits(Array.isArray(data) ? data : []);
-      })
-      .finally(() => setLoading(false));
-  }, []);
+  if (isLoading) {
+    return (
+      <div className="p-8 text-center">
+        Loading available units...
+      </div>
+    );
+  }
 
-  if (loading) return <div>Loading...</div>;
+  if (error) {
+    return (
+      <div className="p-8 text-center text-red-600">
+        Failed to load units.
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <h1>Units</h1>
+    <main className="mx-auto max-w-7xl p-8">
+      <h1 className="mb-8 text-3xl font-bold">
+        Available Units
+      </h1>
 
-      {units.map((u) => (
-        <div key={u.id}>
-          <h3>{u.title}</h3>
-          <p>{u.price}</p>
-        </div>
-      ))}
-    </div>
+      <UnitGrid units={units} />
+    </main>
   );
 }

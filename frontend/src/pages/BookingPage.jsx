@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { useCreateBooking } from "@/features/bookings/hooks/useCreateBooking";
+
+import useCreateBooking from "@/features/bookings/hooks/useCreateBooking";
+
 
 export default function BookingPage() {
+
   const { unitId } = useParams();
 
-  const { mutate: createBooking, isPending } = useCreateBooking();
+  const createBooking = useCreateBooking();
+
 
   const [form, setForm] = useState({
     name: "",
@@ -14,67 +18,101 @@ export default function BookingPage() {
     scheduledAt: "",
   });
 
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    createBooking(
-      {
-        ...form,
+    try {
+      await createBooking.mutateAsync({
         unitId,
-      },
-      {
-        onSuccess: () => {
-          alert("Booking successful!");
-        },
-        onError: () => {
-          alert("Booking failed!");
-        },
-      }
-    );
+        data: form,
+      });
+
+      alert("Booking successful!");
+
+    } catch (error) {
+      console.error(error);
+      alert("Booking failed");
+    }
   };
 
+
   return (
-    <div className="p-6 max-w-md mx-auto">
-      <h1 className="text-xl font-bold mb-4">Book Tour</h1>
+    <div className="mx-auto max-w-md p-6">
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+      <h1 className="mb-4 text-xl font-bold">
+        Book Tour
+      </h1>
+
+
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-3"
+      >
+
         <input
+          className="border p-2"
           placeholder="Name"
-          className="border p-2"
           value={form.name}
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              name: e.target.value,
+            })
+          }
         />
 
+
         <input
+          className="border p-2"
           placeholder="Email"
-          className="border p-2"
           value={form.email}
-          onChange={(e) => setForm({ ...form, email: e.target.value })}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              email: e.target.value,
+            })
+          }
         />
 
+
         <input
-          placeholder="Phone"
           className="border p-2"
+          placeholder="Phone"
           value={form.phone}
-          onChange={(e) => setForm({ ...form, phone: e.target.value })}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              phone: e.target.value,
+            })
+          }
         />
+
 
         <input
           type="datetime-local"
           className="border p-2"
           value={form.scheduledAt}
           onChange={(e) =>
-            setForm({ ...form, scheduledAt: e.target.value })
+            setForm({
+              ...form,
+              scheduledAt: e.target.value,
+            })
           }
         />
 
+
         <button
-          className="bg-blue-600 text-white p-2 rounded"
-          disabled={isPending}
+          disabled={createBooking.isPending}
+          className="rounded bg-blue-600 p-2 text-white"
         >
-          {isPending ? "Submitting..." : "Submit"}
+          {createBooking.isPending
+            ? "Sending..."
+            : "Submit"}
         </button>
+
       </form>
+
     </div>
   );
 }
