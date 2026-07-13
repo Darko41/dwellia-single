@@ -1,5 +1,6 @@
 package com.dwellia_single.model;
 
+import com.dwellia_single.model.enums.BookingStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -19,6 +20,8 @@ public class Booking {
     private String fullName;
     private String email;
     private String phone;
+    @Enumerated(EnumType.STRING)
+    private BookingStatus status = BookingStatus.NEW;
 
     @ManyToOne
     @JoinColumn(name = "unit_id")
