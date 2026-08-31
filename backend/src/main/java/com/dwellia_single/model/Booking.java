@@ -20,6 +20,7 @@ public class Booking {
     private String fullName;
     private String email;
     private String phone;
+
     @Enumerated(EnumType.STRING)
     private BookingStatus status = BookingStatus.NEW;
 
@@ -27,5 +28,16 @@ public class Booking {
     @JoinColumn(name = "unit_id")
     private Unit unit;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime scheduledAt;
+
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+
+        if (status == null) {
+            status = BookingStatus.NEW;
+        }
+    }
 }

@@ -3,6 +3,7 @@ package com.dwellia_single.config;
 import com.dwellia_single.auth.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.*;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.*;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -23,11 +24,24 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> {})
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(sm ->
+                        sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
                 .authorizeHttpRequests(auth -> auth
+
+                        // Authentication
                         .requestMatchers("/api/auth/**").permitAll()
+
+                        // Public property browsing
                         .requestMatchers("/api/units/**").permitAll()
-                        .requestMatchers("/api/bookings/*").permitAll()
+
+                        // Public booking submission
+                        .requestMatchers(HttpMethod.POST, "/api/bookings/*").permitAll()
+
+                        // Viewing bookings requires authentication
+                        .requestMatchers(HttpMethod.GET, "/api/bookings").authenticated()
+
+                        // Everything else
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

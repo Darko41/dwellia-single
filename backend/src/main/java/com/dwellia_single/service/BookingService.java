@@ -1,8 +1,10 @@
 package com.dwellia_single.service;
 
+import com.dwellia_single.exception.BookingConflictException;
 import com.dwellia_single.model.Booking;
 import com.dwellia_single.model.Unit;
 import com.dwellia_single.model.UnitStatus;
+import com.dwellia_single.model.enums.BookingStatus;
 import com.dwellia_single.repository.BookingRepository;
 import com.dwellia_single.repository.UnitRepository;
 import org.springframework.stereotype.Service;
@@ -29,10 +31,23 @@ public class BookingService {
             throw new RuntimeException("Unit not available");
         }
 
-        booking.setUnit(unit);
+        if (booking.getScheduledAt() != null) {
 
-        unit.setStatus(UnitStatus.RESERVED);
-        unitRepository.save(unit);
+            boolean duplicate = bookingRepository
+                    .existsByUnitIdAndScheduledAtAndStatus(
+                            unitId,
+                            booking.getScheduledAt(),
+                            BookingStatus.NEW
+                    );
+
+            if (duplicate) {
+                throw new BookingConflictException(
+                        "This time slot is already booked for this unit"
+                );
+            }
+        }
+
+        booking.setUnit(unit);
 
         return bookingRepository.save(booking);
     }
