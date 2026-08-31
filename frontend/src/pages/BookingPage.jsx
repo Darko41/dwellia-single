@@ -12,7 +12,7 @@ export default function BookingPage() {
 
 
   const [form, setForm] = useState({
-    name: "",
+    fullName: "",
     email: "",
     phone: "",
     scheduledAt: "",
@@ -32,7 +32,15 @@ export default function BookingPage() {
 
     } catch (error) {
       console.error(error);
-      alert("Booking failed");
+
+      if (
+        error.response?.status === 409 ||
+        error.response?.data?.message?.includes("already booked")
+      ) {
+        alert("This time slot is already booked. Please choose another time.");
+      } else {
+        alert("We couldn't complete your booking. Please try again.");
+      }
     }
   };
 
@@ -52,12 +60,12 @@ export default function BookingPage() {
 
         <input
           className="border p-2"
-          placeholder="Name"
-          value={form.name}
+          placeholder="Full name"
+          value={form.fullName}
           onChange={(e) =>
             setForm({
               ...form,
-              name: e.target.value,
+              fullName: e.target.value,
             })
           }
         />
