@@ -55,4 +55,14 @@ public class BookingService {
     public List<Booking> getAllBookings() {
         return bookingRepository.findAll();
     }
+
+    public Booking updateBookingStatus(Long bookingId, BookingStatus status) {
+
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        booking.setStatus(status);
+
+        return bookingRepository.save(booking);
+    }
 }

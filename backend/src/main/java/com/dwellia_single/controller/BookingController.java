@@ -1,6 +1,7 @@
 package com.dwellia_single.controller;
 
 import com.dwellia_single.model.Booking;
+import com.dwellia_single.model.enums.BookingStatus;
 import com.dwellia_single.service.BookingService;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,5 +27,13 @@ public class BookingController {
     @GetMapping
     public List<Booking> getAllBookings() {
         return bookingService.getAllBookings();
+    }
+
+    @PatchMapping("/{bookingId}/status")
+    public Booking updateBookingStatus(
+            @PathVariable Long bookingId,
+            @RequestParam BookingStatus status
+    ) {
+        return bookingService.updateBookingStatus(bookingId, status);
     }
 }

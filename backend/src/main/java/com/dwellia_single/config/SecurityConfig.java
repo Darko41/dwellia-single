@@ -23,27 +23,31 @@ public class SecurityConfig {
 
         http
                 .csrf(csrf -> csrf.disable())
+
                 .cors(cors -> {})
+
+                .headers(headers -> headers
+                        .frameOptions(frame -> frame.sameOrigin())
+                )
+
                 .sessionManagement(sm ->
                         sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/h2-console/**", "/error").permitAll()
 
-                        // Authentication
                         .requestMatchers("/api/auth/**").permitAll()
-
-                        // Public property browsing
                         .requestMatchers("/api/units/**").permitAll()
 
-                        // Public booking submission
                         .requestMatchers(HttpMethod.POST, "/api/bookings/*").permitAll()
 
-                        // Viewing bookings requires authentication
-                        .requestMatchers(HttpMethod.GET, "/api/bookings").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/bookings").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/bookings/*/status").hasRole("ADMIN")
 
-                        // Everything else
                         .anyRequest().authenticated()
                 )
+
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
