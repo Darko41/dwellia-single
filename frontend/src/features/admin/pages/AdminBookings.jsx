@@ -108,12 +108,18 @@ export default function AdminBookings() {
                 </button>
 
                 <button
-                  onClick={() =>
-                    handleStatusChange(
-                      booking.id,
-                      "CANCELLED"
-                    )
-                  }
+                  onClick={() => {
+                    const confirmed = window.confirm(
+                      "Are you sure you want to cancel this booking?"
+                    );
+
+                    if (confirmed) {
+                      handleStatusChange(
+                        booking.id,
+                        "CANCELLED"
+                      );
+                    }
+                  }}
                   disabled={updateStatus.isPending}
                   className="rounded bg-red-600 px-3 py-2 text-white"
                 >

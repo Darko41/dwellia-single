@@ -31,17 +31,22 @@ export default function BookingPage() {
       alert("Booking successful!");
 
     } catch (error) {
-      console.error(error);
+        console.error(error);
 
-      if (
-        error.response?.status === 409 ||
-        error.response?.data?.message?.includes("already booked")
-      ) {
-        alert("This time slot is already booked. Please choose another time.");
-      } else {
-        alert("We couldn't complete your booking. Please try again.");
+        if (
+          error.response?.status === 409 ||
+          error.response?.data?.message?.includes("already booked")
+        ) {
+          alert("This time slot is already booked. Please choose another time.");
+        } else if (error.response?.status === 400) {
+          alert(
+            error.response?.data?.message ||
+            "Please check the booking details."
+          );
+        } else {
+          alert("We couldn't complete your booking. Please try again.");
+        }
       }
-    }
   };
 
 
@@ -100,6 +105,7 @@ export default function BookingPage() {
         <input
           type="datetime-local"
           className="border p-2"
+          min={new Date().toISOString().slice(0, 16)}
           value={form.scheduledAt}
           onChange={(e) =>
             setForm({
