@@ -3,6 +3,7 @@ package com.dwellia_single.controller;
 import com.dwellia_single.model.Booking;
 import com.dwellia_single.model.enums.BookingStatus;
 import com.dwellia_single.service.BookingService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +21,7 @@ public class BookingController {
 
     @PostMapping("/{unitId}")
     public Booking createBooking(@PathVariable Long unitId,
-                                 @RequestBody Booking booking) {
+                                 @RequestBody @Valid Booking booking) {
         return bookingService.createBooking(unitId, booking);
     }
 

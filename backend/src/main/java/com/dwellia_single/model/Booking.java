@@ -2,6 +2,7 @@ package com.dwellia_single.model;
 
 import com.dwellia_single.model.enums.BookingStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import java.time.LocalDateTime;
 
@@ -28,6 +29,8 @@ public class Booking {
     @JoinColumn(name = "unit_id")
     private Unit unit;
 
+    @NotNull(message = "Please choose a tour date and time.")
+    @Column(nullable = false)
     private LocalDateTime scheduledAt;
 
     private LocalDateTime createdAt;

@@ -5,12 +5,13 @@ import com.dwellia_single.model.enums.BookingStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    boolean existsByUnitIdAndScheduledAtAndStatus(
+    boolean existsByUnitIdAndScheduledAtAndStatusIn(
             Long unitId,
             LocalDateTime scheduledAt,
-            BookingStatus status
+            List<BookingStatus> statuses
     );
 }

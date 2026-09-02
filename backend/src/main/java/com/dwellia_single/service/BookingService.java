@@ -9,6 +9,7 @@ import com.dwellia_single.repository.BookingRepository;
 import com.dwellia_single.repository.UnitRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -31,13 +32,24 @@ public class BookingService {
             throw new RuntimeException("Unit not available");
         }
 
+        if (booking.getScheduledAt() != null &&
+                booking.getScheduledAt().isBefore(LocalDateTime.now())) {
+
+            throw new BookingConflictException(
+                    "The tour date and time must be in the future."
+            );
+        }
+
         if (booking.getScheduledAt() != null) {
 
             boolean duplicate = bookingRepository
-                    .existsByUnitIdAndScheduledAtAndStatus(
+                    .existsByUnitIdAndScheduledAtAndStatusIn(
                             unitId,
                             booking.getScheduledAt(),
-                            BookingStatus.NEW
+                            List.of(
+                                    BookingStatus.NEW,
+                                    BookingStatus.CONFIRMED
+                            )
                     );
 
             if (duplicate) {
