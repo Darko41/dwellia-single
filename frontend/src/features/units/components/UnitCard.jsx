@@ -13,7 +13,7 @@ export default function UnitCard({ unit }) {
 
         <div className="mb-3 flex items-start justify-between gap-3">
           <h2 className="text-xl font-semibold">
-            {unit.title}
+            {unit.unitTypeName} — Unit {unit.unitNumber}
           </h2>
 
           <span className="rounded bg-blue-100 px-2 py-1 text-sm text-blue-700">
@@ -21,11 +21,9 @@ export default function UnitCard({ unit }) {
           </span>
         </div>
 
-
-        <p className="mb-4 text-gray-600">
-          {unit.description}
+        <p className="mb-2 text-sm text-gray-500">
+          {unit.propertyName}, {unit.cityName}
         </p>
-
 
         <div className="mb-4 flex gap-4 text-sm text-gray-700">
           <span>
@@ -35,15 +33,19 @@ export default function UnitCard({ unit }) {
           <span>
             🚿 {unit.bathrooms} baths
           </span>
-        </div>
 
+          {unit.squareFeet && (
+            <span>
+              📐 {unit.squareFeet} sqft
+            </span>
+          )}
+        </div>
 
         <div className="flex items-center justify-between">
 
           <p className="text-xl font-bold text-blue-600">
-            ${unit.price}
+            ${unit.rent}
           </p>
-
 
           <Link
             to={`/units/${unit.id}`}
