@@ -28,3 +28,14 @@ export const updateBookingStatus = async (bookingId, status) => {
 
   return res.data;
 };
+
+export const rescheduleBooking = async (bookingId, scheduledAt) => {
+  const res = await axiosInstance.patch(
+    `/api/bookings/${bookingId}/schedule`,
+    {
+      scheduledAt,
+    }
+  );
+
+  return res.data;
+};
