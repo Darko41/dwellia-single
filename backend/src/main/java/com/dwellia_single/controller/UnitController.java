@@ -1,6 +1,7 @@
 package com.dwellia_single.controller;
 
-import com.dwellia_single.model.Unit;
+import com.dwellia_single.model.dto.UnitResponse;
+import com.dwellia_single.model.entity.Unit;
 import com.dwellia_single.service.UnitService;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +19,7 @@ public class UnitController {
     }
 
     @GetMapping
-    public List<Unit> getAllUnits() {
+    public List<UnitResponse> getAllUnits() {
         return unitService.getAllUnits();
     }
 
@@ -28,7 +29,7 @@ public class UnitController {
     }
 
     @GetMapping("/{id}")
-    public Unit getUnitById(@PathVariable Long id) {
+    public UnitResponse getUnitById(@PathVariable Long id) {
         return unitService.getUnitById(id);
     }
 }

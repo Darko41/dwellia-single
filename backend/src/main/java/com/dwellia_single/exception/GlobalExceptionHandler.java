@@ -11,9 +11,9 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(BookingConflictException.class)
+    @ExceptionHandler(ShowingConflictException.class)
     public ResponseEntity<Map<String, String>> handleBookingConflict(
-            BookingConflictException ex) {
+            ShowingConflictException ex) {
 
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)

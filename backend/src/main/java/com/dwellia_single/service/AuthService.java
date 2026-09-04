@@ -1,7 +1,7 @@
 package com.dwellia_single.service;
 
-import com.dwellia_single.model.Role;
-import com.dwellia_single.model.User;
+import com.dwellia_single.model.enums.Role;
+import com.dwellia_single.model.entity.User;
 import com.dwellia_single.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

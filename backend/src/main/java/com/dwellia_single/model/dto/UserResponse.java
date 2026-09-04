@@ -1,6 +1,6 @@
 package com.dwellia_single.model.dto;
 
-import com.dwellia_single.model.Role;
+import com.dwellia_single.model.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

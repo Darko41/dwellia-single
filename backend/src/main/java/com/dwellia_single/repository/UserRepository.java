@@ -1,6 +1,6 @@
 package com.dwellia_single.repository;
 
-import com.dwellia_single.model.User;
+import com.dwellia_single.model.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -1,9 +1,9 @@
 package com.dwellia_single.model.enums;
 
-public enum BookingStatus {
-    NEW,
-    CONTACTED,
+public enum ShowingStatus {
+    SCHEDULED,
     CONFIRMED,
+    COMPLETED,
     CANCELLED,
-    COMPLETED
+    NO_SHOW
 }

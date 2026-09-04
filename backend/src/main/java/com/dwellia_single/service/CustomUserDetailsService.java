@@ -1,6 +1,6 @@
 package com.dwellia_single.service;
 
-import com.dwellia_single.model.User;
+import com.dwellia_single.model.entity.User;
 import com.dwellia_single.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.*;

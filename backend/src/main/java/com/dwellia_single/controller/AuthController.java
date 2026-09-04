@@ -1,6 +1,6 @@
 package com.dwellia_single.controller;
 
-import com.dwellia_single.model.User;
+import com.dwellia_single.model.entity.User;
 import com.dwellia_single.model.dto.AuthRequest;
 import com.dwellia_single.model.dto.UserResponse;
 import com.dwellia_single.repository.UserRepository;

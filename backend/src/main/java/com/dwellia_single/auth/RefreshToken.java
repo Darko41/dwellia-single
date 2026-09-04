@@ -1,6 +1,6 @@
 package com.dwellia_single.auth;
 
-import com.dwellia_single.model.User;
+import com.dwellia_single.model.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 

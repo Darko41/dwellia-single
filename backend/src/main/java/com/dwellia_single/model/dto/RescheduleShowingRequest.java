@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
-public class RescheduleBookingRequest {
+public class RescheduleShowingRequest {
 
     @NotNull(message = "Please choose a tour date and time.")
     private LocalDateTime scheduledAt;

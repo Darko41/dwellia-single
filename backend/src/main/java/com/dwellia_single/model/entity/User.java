@@ -1,5 +1,6 @@
-package com.dwellia_single.model;
+package com.dwellia_single.model.entity;
 
+import com.dwellia_single.model.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;

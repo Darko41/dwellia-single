@@ -1,4 +1,4 @@
-package com.dwellia_single.model;
+package com.dwellia_single.model.enums;
 
 public enum Role {
     ROLE_USER,
