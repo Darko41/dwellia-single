@@ -1,6 +1,7 @@
 package com.dwellia_single.controller;
 
 import com.dwellia_single.model.Booking;
+import com.dwellia_single.model.dto.RescheduleBookingRequest;
 import com.dwellia_single.model.enums.BookingStatus;
 import com.dwellia_single.service.BookingService;
 import jakarta.validation.Valid;
@@ -36,5 +37,16 @@ public class BookingController {
             @RequestParam BookingStatus status
     ) {
         return bookingService.updateBookingStatus(bookingId, status);
+    }
+
+    @PatchMapping("/{bookingId}/schedule")
+    public Booking rescheduleBooking(
+            @PathVariable Long bookingId,
+            @RequestBody @Valid RescheduleBookingRequest request
+    ) {
+        return bookingService.rescheduleBooking(
+                bookingId,
+                request.getScheduledAt()
+        );
     }
 }

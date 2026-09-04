@@ -44,6 +44,7 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.GET, "/api/bookings").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/bookings/*/status").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/bookings/*/schedule").hasRole("ADMIN")
 
                         .anyRequest().authenticated()
                 )

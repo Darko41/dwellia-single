@@ -68,12 +68,89 @@ public class BookingService {
         return bookingRepository.findAll();
     }
 
-    public Booking updateBookingStatus(Long bookingId, BookingStatus status) {
+    /*
+    NEW can become:
+    CONFIRMED ✅
+    CANCELLED ✅
 
+    CONFIRMED can become:
+    CANCELLED ✅
+
+    But:
+    CONFIRMED → NEW ❌
+    CANCELLED → NEW ❌
+    CANCELLED → CONFIRMED ❌
+     */
+    public Booking updateBookingStatus(Long bookingId, BookingStatus status) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
 
+        BookingStatus currentStatus = booking.getStatus();
+
+        if (currentStatus == BookingStatus.CANCELLED) {
+            throw new BookingConflictException(
+                    "A cancelled booking cannot be changed."
+            );
+        }
+
+        if (currentStatus == BookingStatus.CONFIRMED &&
+                status != BookingStatus.CANCELLED) {
+            throw new BookingConflictException(
+                    "A confirmed booking can only be cancelled."
+            );
+        }
+
         booking.setStatus(status);
+
+        return bookingRepository.save(booking);
+    }
+
+    /*
+    NEW → reschedule: ✅
+    CONFIRMED → reschedule: ✅
+    CANCELLED → reschedule: ❌
+    Past date/time: ❌
+    Time occupied by another NEW/CONFIRMED booking: ❌
+    Same booking keeping its existing time: ✅
+    Status remains unchanged when rescheduled.
+     */
+    public Booking rescheduleBooking(
+            Long bookingId,
+            LocalDateTime newScheduledAt
+    ) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        if (booking.getStatus() == BookingStatus.CANCELLED) {
+            throw new BookingConflictException(
+                    "A cancelled booking cannot be rescheduled."
+            );
+        }
+
+        if (newScheduledAt.isBefore(LocalDateTime.now())) {
+            throw new BookingConflictException(
+                    "The tour date and time must be in the future."
+            );
+        }
+
+        boolean duplicate = bookingRepository
+                .existsByUnitIdAndScheduledAtAndStatusInAndIdNot(
+                        booking.getUnit().getId(),
+                        newScheduledAt,
+                        List.of(
+                                BookingStatus.NEW,
+                                BookingStatus.CONFIRMED
+                        ),
+                        bookingId
+                );
+
+        if (duplicate) {
+            throw new BookingConflictException(
+                    "This time slot is already booked for this unit."
+            );
+        }
+
+        booking.setScheduledAt(newScheduledAt);
 
         return bookingRepository.save(booking);
     }
