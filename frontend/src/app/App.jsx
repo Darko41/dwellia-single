@@ -9,7 +9,8 @@ import UnitDetailsPage from "@/pages/UnitDetailsPage";
 
 import AdminLayout from "@/features/admin/layout/AdminLayout";
 import AdminUnits from "@/features/admin/pages/AdminUnits";
-import AdminBookings from "@/features/admin/pages/AdminBookings";
+import AdminShowings from "@/features/admin/pages/AdminShowings";
+
 
 import LoginPage from "@/features/auth/pages/LoginPage";
 
@@ -37,7 +38,7 @@ function App() {
           }
         >
           <Route path="units" element={<AdminUnits />} />
-          <Route path="bookings" element={<AdminBookings />} />
+          <Route path="showings" element={<AdminShowings />} />
         </Route>
       </Routes>
 

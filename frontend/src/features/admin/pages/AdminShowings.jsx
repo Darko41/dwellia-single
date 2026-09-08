@@ -121,6 +121,34 @@ export default function AdminShowings() {
     }
   };
 
+const handleComplete = async (showingId) => {
+  try {
+    await updateStatusMutation.mutateAsync({
+      showingId,
+      status: "COMPLETED",
+    });
+  } catch (err) {
+    alert(
+      err?.response?.data?.message ||
+        "Failed to complete showing."
+    );
+  }
+};
+
+const handleNoShow = async (showingId) => {
+  try {
+    await updateStatusMutation.mutateAsync({
+      showingId,
+      status: "NO_SHOW",
+    });
+  } catch (err) {
+    alert(
+      err?.response?.data?.message ||
+        "Failed to mark showing as no-show."
+    );
+  }
+};
+
   if (isLoading) {
     return <p>Loading showings...</p>;
   }
@@ -278,6 +306,28 @@ export default function AdminShowings() {
                     className="rounded bg-red-600 px-3 py-2 text-white hover:bg-red-700 disabled:opacity-50"
                   >
                     Cancel
+                  </button>
+                </>
+              )}
+
+              {showing.status === "CONFIRMED" && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => handleComplete(showing.id)}
+                    disabled={updateStatusMutation.isPending}
+                    className="rounded bg-green-600 px-3 py-2 text-white hover:bg-green-700 disabled:opacity-50"
+                  >
+                    Complete
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleNoShow(showing.id)}
+                    disabled={updateStatusMutation.isPending}
+                    className="rounded bg-gray-600 px-3 py-2 text-white hover:bg-gray-700 disabled:opacity-50"
+                  >
+                    No Show
                   </button>
                 </>
               )}
