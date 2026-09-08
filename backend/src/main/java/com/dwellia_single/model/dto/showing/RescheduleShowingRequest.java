@@ -1,4 +1,4 @@
-package com.dwellia_single.model.dto;
+package com.dwellia_single.model.dto.showing;
 
 import jakarta.validation.constraints.NotNull;
 

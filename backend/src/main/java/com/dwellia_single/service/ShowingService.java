@@ -1,13 +1,19 @@
 package com.dwellia_single.service;
 
 import com.dwellia_single.exception.ShowingConflictException;
+import com.dwellia_single.model.dto.showing.CreateShowingRequest;
+import com.dwellia_single.model.dto.showing.ShowingResponse;
+import com.dwellia_single.model.entity.Lead;
+import com.dwellia_single.model.entity.Property;
 import com.dwellia_single.model.entity.Showing;
 import com.dwellia_single.model.entity.Unit;
 import com.dwellia_single.model.enums.UnitStatus;
 import com.dwellia_single.model.enums.ShowingStatus;
+import com.dwellia_single.repository.LeadRepository;
 import com.dwellia_single.repository.ShowingRepository;
 import com.dwellia_single.repository.UnitRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,16 +23,23 @@ public class ShowingService {
 
     private final ShowingRepository showingRepository;
     private final UnitRepository unitRepository;
+    private final LeadRepository leadRepository;
 
     public ShowingService(
             ShowingRepository showingRepository,
-            UnitRepository unitRepository
+            UnitRepository unitRepository,
+            LeadRepository leadRepository
     ) {
         this.showingRepository = showingRepository;
         this.unitRepository = unitRepository;
+        this.leadRepository = leadRepository;
     }
 
-    public Showing createShowing(Long unitId, Showing showing) {
+    @Transactional
+    public ShowingResponse createShowing(
+            Long unitId,
+            CreateShowingRequest request
+    ) {
 
         Unit unit = unitRepository.findById(unitId)
                 .orElseThrow(() -> new RuntimeException("Unit not found"));
@@ -35,99 +48,125 @@ public class ShowingService {
             throw new RuntimeException("Unit not available");
         }
 
-        if (showing.getScheduledAt() != null &&
-                showing.getScheduledAt().isBefore(LocalDateTime.now())) {
+        Lead lead = leadRepository.findById(request.getLeadId())
+                .orElseThrow(() -> new RuntimeException("Lead not found"));
 
+        LocalDateTime scheduledAt = request.getScheduledAt();
+
+        if (scheduledAt.isBefore(LocalDateTime.now())) {
             throw new ShowingConflictException(
                     "The showing date and time must be in the future."
             );
         }
 
-        if (showing.getScheduledAt() != null) {
-
-            boolean duplicate = showingRepository
-                    .existsByUnitIdAndScheduledAtAndStatusIn(
-                            unitId,
-                            showing.getScheduledAt(),
-                            List.of(
-                                    ShowingStatus.SCHEDULED,
-                                    ShowingStatus.CONFIRMED
-                            )
-                    );
-
-            if (duplicate) {
-                throw new ShowingConflictException(
-                        "This time slot is already booked for this unit."
+        boolean duplicate = showingRepository
+                .existsByUnitIdAndScheduledAtAndStatusIn(
+                        unitId,
+                        scheduledAt,
+                        List.of(
+                                ShowingStatus.SCHEDULED,
+                                ShowingStatus.CONFIRMED
+                        )
                 );
-            }
+
+        if (duplicate) {
+            throw new ShowingConflictException(
+                    "This time slot is already booked for this unit."
+            );
         }
 
+        Showing showing = new Showing();
+
+        showing.setLead(lead);
         showing.setUnit(unit);
+        showing.setScheduledAt(scheduledAt);
+        showing.setStatus(ShowingStatus.SCHEDULED);
+        showing.setNotes(request.getNotes());
 
-        return showingRepository.save(showing);
+        Showing savedShowing = showingRepository.save(showing);
+
+        return toResponse(savedShowing);
     }
 
-    public List<Showing> getAllShowings() {
-        return showingRepository.findAll();
+    @Transactional(readOnly = true)
+    public List<ShowingResponse> getAllShowings() {
+        return showingRepository.findAll()
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
 
-    /*
-    SCHEDULED → CONFIRMED ✅
-    SCHEDULED → CANCELLED ✅
-
-    CONFIRMED → CANCELLED ✅
-
-    CONFIRMED → SCHEDULED ❌
-    CANCELLED → SCHEDULED ❌
-    CANCELLED → CONFIRMED ❌
-    */
-    public Showing updateShowingStatus(
+    @Transactional
+    public ShowingResponse updateShowingStatus(
             Long showingId,
-            ShowingStatus status
+            ShowingStatus newStatus
     ) {
+
         Showing showing = showingRepository.findById(showingId)
                 .orElseThrow(() -> new RuntimeException("Showing not found"));
 
         ShowingStatus currentStatus = showing.getStatus();
 
-        if (currentStatus == ShowingStatus.CANCELLED) {
+        if (currentStatus == ShowingStatus.CANCELLED ||
+                currentStatus == ShowingStatus.COMPLETED ||
+                currentStatus == ShowingStatus.NO_SHOW) {
+
             throw new ShowingConflictException(
-                    "A cancelled showing cannot be changed."
+                    "A completed, cancelled, or no-show showing cannot be changed."
             );
         }
 
-        if (currentStatus == ShowingStatus.CONFIRMED &&
-                status != ShowingStatus.CANCELLED) {
+        boolean validTransition =
+                (currentStatus == ShowingStatus.SCHEDULED &&
+                        (newStatus == ShowingStatus.CONFIRMED ||
+                                newStatus == ShowingStatus.CANCELLED))
 
+                        ||
+
+                        (currentStatus == ShowingStatus.CONFIRMED &&
+                                (newStatus == ShowingStatus.COMPLETED ||
+                                        newStatus == ShowingStatus.NO_SHOW ||
+                                        newStatus == ShowingStatus.CANCELLED));
+
+        if (!validTransition) {
             throw new ShowingConflictException(
-                    "A confirmed showing can only be cancelled."
+                    "Invalid showing status transition."
             );
         }
 
-        showing.setStatus(status);
+        showing.setStatus(newStatus);
 
-        return showingRepository.save(showing);
+        return toResponse(showingRepository.save(showing));
     }
 
     /*
-    SCHEDULED → reschedule: ✅
-    CONFIRMED → reschedule: ✅
-    CANCELLED → reschedule: ❌
-    Past date/time: ❌
-    Time occupied by another SCHEDULED/CONFIRMED showing: ❌
-    Same showing keeping its existing time: ✅
-    Status remains unchanged when rescheduled.
+    SCHEDULED → CONFIRMED     ✅
+    SCHEDULED → CANCELLED     ✅
+    SCHEDULED → COMPLETED     ❌
+    SCHEDULED → NO_SHOW       ❌
+    CONFIRMED → COMPLETED     ✅
+    CONFIRMED → NO_SHOW       ✅
+    CONFIRMED → CANCELLED     ✅
+    COMPLETED → anything      ❌
+    NO_SHOW → anything        ❌
+    CANCELLED → anything      ❌
     */
-    public Showing rescheduleShowing(
+
+    @Transactional
+    public ShowingResponse rescheduleShowing(
             Long showingId,
             LocalDateTime newScheduledAt
     ) {
+
         Showing showing = showingRepository.findById(showingId)
                 .orElseThrow(() -> new RuntimeException("Showing not found"));
 
-        if (showing.getStatus() == ShowingStatus.CANCELLED) {
+        if (showing.getStatus() == ShowingStatus.CANCELLED ||
+                showing.getStatus() == ShowingStatus.COMPLETED ||
+                showing.getStatus() == ShowingStatus.NO_SHOW) {
+
             throw new ShowingConflictException(
-                    "A cancelled showing cannot be rescheduled."
+                    "A completed, cancelled, or no-show showing cannot be rescheduled."
             );
         }
 
@@ -156,6 +195,30 @@ public class ShowingService {
 
         showing.setScheduledAt(newScheduledAt);
 
-        return showingRepository.save(showing);
+        return toResponse(showingRepository.save(showing));
+    }
+
+    private ShowingResponse toResponse(Showing showing) {
+
+        Lead lead = showing.getLead();
+        Unit unit = showing.getUnit();
+        Property property = unit.getProperty();
+
+        String leadName =
+                lead.getFirstName() + " " + lead.getLastName();
+
+        return new ShowingResponse(
+                showing.getId(),
+                lead.getId(),
+                leadName,
+                lead.getEmail(),
+                unit.getId(),
+                unit.getUnitNumber(),
+                property.getId(),
+                property.getName(),
+                showing.getScheduledAt(),
+                showing.getStatus().name(),
+                showing.getNotes()
+        );
     }
 }

@@ -1,7 +1,8 @@
 package com.dwellia_single.controller;
 
-import com.dwellia_single.model.entity.Showing;
-import com.dwellia_single.model.dto.RescheduleShowingRequest;
+import com.dwellia_single.model.dto.showing.CreateShowingRequest;
+import com.dwellia_single.model.dto.showing.ShowingResponse;
+import com.dwellia_single.model.dto.showing.RescheduleShowingRequest;
 import com.dwellia_single.model.enums.ShowingStatus;
 import com.dwellia_single.service.ShowingService;
 import jakarta.validation.Valid;
@@ -21,28 +22,31 @@ public class ShowingController {
     }
 
     @PostMapping("/{unitId}")
-    public Showing createShowing(
+    public ShowingResponse createShowing(
             @PathVariable Long unitId,
-            @RequestBody @Valid Showing showing
+            @RequestBody @Valid CreateShowingRequest request
     ) {
-        return showingService.createShowing(unitId, showing);
+        return showingService.createShowing(unitId, request);
     }
 
     @GetMapping
-    public List<Showing> getAllShowings() {
+    public List<ShowingResponse> getAllShowings() {
         return showingService.getAllShowings();
     }
 
     @PatchMapping("/{showingId}/status")
-    public Showing updateShowingStatus(
+    public ShowingResponse updateShowingStatus(
             @PathVariable Long showingId,
             @RequestParam ShowingStatus status
     ) {
-        return showingService.updateShowingStatus(showingId, status);
+        return showingService.updateShowingStatus(
+                showingId,
+                status
+        );
     }
 
     @PatchMapping("/{showingId}/schedule")
-    public Showing rescheduleShowing(
+    public ShowingResponse rescheduleShowing(
             @PathVariable Long showingId,
             @RequestBody @Valid RescheduleShowingRequest request
     ) {

@@ -12,7 +12,7 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ShowingConflictException.class)
-    public ResponseEntity<Map<String, String>> handleBookingConflict(
+    public ResponseEntity<Map<String, String>> handleShowingConflict(
             ShowingConflictException ex) {
 
         return ResponseEntity
@@ -26,6 +26,9 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .badRequest()
-                .body(Map.of("message", "Please choose a tour date and time."));
+                .body(Map.of(
+                        "message",
+                        "Please choose a tour date and time."
+                ));
     }
 }

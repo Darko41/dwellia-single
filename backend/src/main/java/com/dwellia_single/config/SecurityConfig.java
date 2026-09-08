@@ -40,11 +40,14 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/units/**").permitAll()
 
-                        .requestMatchers(HttpMethod.POST, "/api/bookings/*").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/leads").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/showings/*").permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/api/bookings").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/api/bookings/*/status").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/api/bookings/*/schedule").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/showings/*").permitAll()
+
+                        .requestMatchers(HttpMethod.GET, "/api/showings").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/showings/*/status").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/showings/*/schedule").hasRole("ADMIN")
 
                         .anyRequest().authenticated()
                 )
