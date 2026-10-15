@@ -85,30 +85,6 @@ public class DataSeeder implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
-        // =========================
-        // SEED ADMIN
-        // =========================
-
-        User admin = userRepository.findByEmail("admin@dwellia.com")
-                .orElseGet(() -> {
-                    User user = User.builder()
-                            .email("admin@dwellia.com")
-                            .password(passwordEncoder.encode("Admin123!"))
-                            .role(Role.ROLE_ADMIN)
-                            .enabled(true)
-                            .build();
-
-                    User savedUser = userRepository.save(user);
-
-                    System.out.println("=================================");
-                    System.out.println("Development admin created:");
-                    System.out.println("Email: admin@dwellia.com");
-                    System.out.println("Password: Admin123!");
-                    System.out.println("=================================");
-
-                    return savedUser;
-                });
-
 
         // =========================
         // COMPANY
@@ -132,6 +108,31 @@ public class DataSeeder implements CommandLineRunner {
                     newCompany.setStatus(CompanyStatus.ACTIVE);
 
                     return companyRepository.save(newCompany);
+                });
+
+        // =========================
+        // SEED ADMIN
+        // =========================
+
+        User admin = userRepository.findByEmail("admin@dwellia.com")
+                .orElseGet(() -> {
+                    User user = User.builder()
+                            .email("admin@dwellia.com")
+                            .password(passwordEncoder.encode("Admin123!"))
+                            .role(Role.ROLE_ADMIN)
+                            .enabled(true)
+                            .company(company)
+                            .build();
+
+                    User savedUser = userRepository.save(user);
+
+                    System.out.println("=================================");
+                    System.out.println("Development admin created:");
+                    System.out.println("Email: admin@dwellia.com");
+                    System.out.println("Password: Admin123!");
+                    System.out.println("=================================");
+
+                    return savedUser;
                 });
 
 
